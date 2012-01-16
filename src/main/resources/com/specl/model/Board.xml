@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="board" >
+  	
+  <typeAlias type="com.specl.model.Board" alias="Board" />
+  	
+  <resultMap id="BoardResult" class="Board" >
+    <result column="board_id" property="boardId" />
+    <result column="title" property="title" />
+    <result column="url" property="url" />
+  </resultMap>
+  	
+  <insert id="addBoard" parameterClass="Board" >
+    INSERT INTO board (title, url)
+    VALUES (#title#, #url#)
+    <selectKey resultClass="int" keyProperty="boardId">  
+		<![CDATA[SELECT LAST_INSERT_ID() AS board_id ]]>
+	</selectKey>
+  </insert>
+  	
+  <delete id="deleteById" parameterClass="INTEGER" >
+    DELETE FROM board
+    WHERE board_id = #boardId#
+  </delete>
+  	
+  <select id="getBoardById" resultMap="BoardResult" parameterClass="INTEGER" >
+    SELECT board_id, title, url
+    FROM board
+    WHERE board_id = #boardId#
+  </select>
+  	
+  <update id="updateBoard" parameterClass="Board" >
+    UPDATE board
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="title" >
+        title = #title#
+      </isNotNull>
+      <isNotNull prepend="," property="url" >
+        url = #url#
+      </isNotNull>
+    </dynamic>
+    WHERE board_id = #boardId#
+  </update>
+  
+    <select id="getBoard" resultMap="BoardResult" parameterClass="java.util.Map">
+	select board_id , title , url	
+	from board where length(title)>0  and length(url) >0 
+	order by board_id asc
+	</select>
+  	
+</sqlMap>

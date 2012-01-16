@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE sqlMap PUBLIC '-//iBATIS.com//DTD SQL Map 2.0//EN' 'http://ibatis.apache.org/dtd/sql-map-2.dtd'>
+<sqlMap namespace='Card'>
+<typeAlias alias="Card" type="com.specl.model.Card"/>
+<resultMap id='result' class='com.specl.model.Card'>
+<result property="cardId" column="card_id" />
+<result property="batchNo" column="batch_no" />
+<result property="cardNo" column="card_no" />
+<result property="password" column="password" />
+<result property="money" column="money" />
+<result property="createTime" column="create_time" />
+<result property="activeTime" column="active_time" />
+<result property="endTime" column="end_time" />
+<result property="isActive" column="is_active" />
+<result property="memberId" column="member_id" />
+<result property="memberName" column="member_name" />
+<result property="cardType" column="card_type"/>
+<result property="status" column="status"/>
+<result column="using_condition" property="usingCondition"/>
+<result property="isPostpone" column="is_postpone"/>
+</resultMap>
+
+<insert id="addCard" parameterClass="Card">
+	insert into card(batch_no,card_no,password,money,create_time,is_active,end_time , card_type , status,using_condition )
+	values (#batchNo#,#cardNo#,#password#,#money#,#createTime#,#isActive#,#endTime# , #cardType# , #status#,#usingCondition#)
+	
+	<selectKey resultClass="int" keyProperty="cardId">  
+		<![CDATA[SELECT LAST_INSERT_ID() AS card_id ]]>
+	</selectKey>
+</insert>
+ <select id="getCard" parameterClass="int" resultMap="result">
+    select * from card where card_id=#value#
+  </select>
+  <select id="getCardByCardNo" parameterClass="Card" resultMap="result">
+    select * from card 
+    <dynamic prepend="where">
+    	<isNotNull prepend="and" property="cardNo">
+    	card_no=#cardNo#
+    	</isNotNull>
+    	<isNotNull prepend="and" property="isActive">
+    	is_active=#isActive#
+    	</isNotNull>
+    </dynamic>
+  </select>
+  <select id="getCardBybatchNo" parameterClass="String" resultMap="result">
+    select * from card where batch_no=#value#
+  </select>
+ <update id="updateCardByBatchNo" parameterClass="Card">
+     update card 
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="password">
+				password = #password#
+			</isNotNull>
+			<isNotNull prepend="," property="money">
+				money = #money#
+			</isNotNull>
+			<isNotNull prepend="," property="activeTime">
+				active_time = #activeTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time = #endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="isActive">
+				is_active = #isActive#
+			</isNotNull>
+			<isNotNull prepend="," property="memberId">
+				member_id = #memberId#
+			</isNotNull>
+			<isNotNull prepend=","  property="memberName">
+				member_name = #memberName#
+			</isNotNull>
+			<isNotNull prepend=","  property="status">
+				status = #status#
+			</isNotNull>
+			<isNotNull prepend="," property="isPostpone">
+				is_postpone = #isPostpone#
+			</isNotNull>
+		</dynamic>
+		where batch_no = #batchNo# and is_postpone!=1
+  </update>
+  
+  <update id="updateCardById" parameterClass="Card">
+  	update card
+  	<dynamic prepend="set">
+			<isNotNull prepend="," property="password">
+				password = #password#
+			</isNotNull>
+			<isNotNull prepend="," property="money">
+				money = #money#
+			</isNotNull>
+			<isNotNull prepend="," property="activeTime">
+				active_time = #activeTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time = #endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="isActive">
+				is_active = #isActive#
+			</isNotNull>
+			<isNotNull prepend="," property="memberId">
+				member_id = #memberId#
+			</isNotNull>
+			<isNotNull prepend=","  property="memberName">
+				member_name = #memberName#
+			</isNotNull>
+			<isNotNull prepend=","  property="status">
+				status = #status#
+			</isNotNull>
+			<isNotNull prepend="," property="isPostpone">
+				is_postpone = #isPostpone#
+			</isNotNull>
+  	</dynamic>
+  	<dynamic prepend="where">
+  		<isNotNull prepend="and" property="cardId">
+  			card_id = #cardId#
+  		</isNotNull>
+  		<isNotNull prepend="and" property="cardNo">
+  			card_no = #cardNo#
+  		</isNotNull>
+  	</dynamic>
+  </update>
+ <!--如果已经激活 而且未过期 设置状态为可用 -->
+    <update id="updateCardByIsActive" parameterClass="Card">
+       update card set status=1,end_time = #endTime#
+       where batch_no = #batchNo# and is_active=1 and is_postpone!=1
+   </update>
+   <!--如果未激活 而且未过期 设置状态为未激活 -->
+    <update id="updateCardByNonActive" parameterClass="Card">
+       update card set status=0,end_time = #endTime#
+       where batch_no = #batchNo# and is_active=0 and is_postpone!=1
+   </update>
+   
+    <update id="updateCardByBatchNoNoPostpone" parameterClass="Card">
+     update card 
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="password">
+				password = #password#
+			</isNotNull>
+			<isNotNull prepend="," property="money">
+				money = #money#
+			</isNotNull>
+			<isNotNull prepend="," property="activeTime">
+				active_time = #activeTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time = #endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="isActive">
+				is_active = #isActive#
+			</isNotNull>
+			<isNotNull prepend="," property="memberId">
+				member_id = #memberId#
+			</isNotNull>
+			<isNotNull prepend=","  property="memberName">
+				member_name = #memberName#
+			</isNotNull>
+			<isNotNull prepend=","  property="status">
+				status = #status#
+			</isNotNull>
+			<isNotNull prepend="," property="isPostpone">
+				is_postpone = #isPostpone#
+			</isNotNull>
+		</dynamic>
+		where batch_no = #batchNo#
+  </update>
+</sqlMap>

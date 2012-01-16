@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="mail" >
+  	
+  <typeAlias type="com.specl.model.Mail" alias="Mail" />
+  	
+  <resultMap id="MailResult" class="Mail" >
+    <result column="mail_id" property="mailId" />
+    <result column="title" property="title" />
+    <result column="content" property="content" />
+  </resultMap>
+  	
+  <insert id="addMail" parameterClass="Mail" >
+    INSERT INTO mail (title, content)
+    VALUES (#title#, #content#)
+    <selectKey resultClass="int" keyProperty="mailId">  
+		<![CDATA[SELECT LAST_INSERT_ID() AS mail_id ]]>
+	</selectKey>
+  </insert>
+  	
+  <delete id="deleteById" parameterClass="INTEGER" >
+    DELETE FROM mail
+    WHERE mail_id = #mailId#
+  </delete>
+  	
+  <select id="getMailById" resultMap="MailResult" parameterClass="INTEGER" >
+    SELECT mail_id, title, content
+    FROM mail
+    WHERE mail_id = #mailId#
+  </select>
+  	
+  <update id="updateMail" parameterClass="Mail" >
+    UPDATE mail
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="title" >
+        title = #title#
+      </isNotNull>
+      <isNotNull prepend="," property="content" >
+        content = #content#
+      </isNotNull>
+    </dynamic>
+    WHERE mail_id = #mailId#
+  </update>
+  
+    <select id="getMail" resultMap="MailResult" parameterClass="java.util.Map">
+	select mail_id , title , content	
+	from mail where length(title)>0  and length(content) >0 
+	order by mail_id asc
+	</select>
+  	
+</sqlMap>
